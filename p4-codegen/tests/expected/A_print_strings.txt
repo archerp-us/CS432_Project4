@@ -1,0 +1,126 @@
+main:
+  push BP
+  i2i SP => BP
+  addI SP, 0 => SP
+  print "Hello, world!\n"
+  print "My name is \"Decaf\"\n"
+  print "Good\tbye!\n"
+  loadI 0 => r3
+  i2i r3 => RET
+  jump l0
+l0:
+  i2i BP => SP
+  pop BP
+  return
+
+==========================
+sp=65536 bp=-9999999 ret=-9999999
+virtual regs: 
+stack:
+other memory:
+==========================
+
+Executing: push BP
+
+==========================
+sp=65528 bp=-9999999 ret=-9999999
+virtual regs: 
+stack:  65528: -9999999
+other memory:
+==========================
+
+Executing: i2i SP => BP
+
+==========================
+sp=65528 bp=65528 ret=-9999999
+virtual regs: 
+stack:  65528: -9999999
+other memory:
+==========================
+
+Executing: addI SP, 0 => SP
+
+==========================
+sp=65528 bp=65528 ret=-9999999
+virtual regs: 
+stack:  65528: -9999999
+other memory:
+==========================
+
+Executing: print "Hello, world!\n"
+Hello, world!
+
+==========================
+sp=65528 bp=65528 ret=-9999999
+virtual regs: 
+stack:  65528: -9999999
+other memory:
+==========================
+
+Executing: print "My name is \"Decaf\"\n"
+My name is "Decaf"
+
+==========================
+sp=65528 bp=65528 ret=-9999999
+virtual regs: 
+stack:  65528: -9999999
+other memory:
+==========================
+
+Executing: print "Good\tbye!\n"
+Good	bye!
+
+==========================
+sp=65528 bp=65528 ret=-9999999
+virtual regs: 
+stack:  65528: -9999999
+other memory:
+==========================
+
+Executing: loadI 0 => r3
+
+==========================
+sp=65528 bp=65528 ret=-9999999
+virtual regs:  r3=0
+stack:  65528: -9999999
+other memory:
+==========================
+
+Executing: i2i r3 => RET
+
+==========================
+sp=65528 bp=65528 ret=0
+virtual regs:  r3=0
+stack:  65528: -9999999
+other memory:
+==========================
+
+Executing: jump l0
+
+==========================
+sp=65528 bp=65528 ret=0
+virtual regs:  r3=0
+stack:  65528: -9999999
+other memory:
+==========================
+
+Executing: i2i BP => SP
+
+==========================
+sp=65528 bp=65528 ret=0
+virtual regs:  r3=0
+stack:  65528: -9999999
+other memory:
+==========================
+
+Executing: pop BP
+
+==========================
+sp=65536 bp=-9999999 ret=0
+virtual regs:  r3=0
+stack:
+other memory:  65528: -9999999
+==========================
+
+Executing: return
+RETURN VALUE = 0
