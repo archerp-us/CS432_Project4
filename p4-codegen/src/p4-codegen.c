@@ -1,6 +1,7 @@
 /**
  * @file p4-codegen.c
  * @brief Compiler phase 4: code generation
+ * @authors Philip Archer and Xinzhe He
  */
 #include "p4-codegen.h"
 
@@ -145,9 +146,42 @@ void CodeGenVisitor_gen_funcdecl (NodeVisitor* visitor, ASTNode* node)
     EMIT0OP(RETURN);
 }
 
+// function to generate code for literals
+void CodeGenVisitor_gen_literal (NodeVisitor* visitor, ASTNode* node)
+{
+	Operand reg = virtual_register();
+
+	//if (node->literal.type == INT)
+	//{
+		EMIT2OP(LOAD_I, int_const(node->literal.integer), reg);
+		ASTNode_set_temp_reg(node, reg);
+	//}
+}
+
+// function to generate code for return
+void CodeGenVisitor_gen_return (NodeVisitor* visitor, ASTNode* node)
+{
+	ASTNode_copy_code(node, node->funcreturn.value);
+	EMIT2OP(I2I, ASTNode_get_temp_reg(node), return_register());
+}
+
+// function to generate code for literals
+void CodeGenVisitor_gen_block (NodeVisitor* visitor, ASTNode* node)
+{
+	/*FOR_EACH(ASTNode*, statement, node->block.statements)
+	{
+		ASTNode_copy_code(node, statement);
+	}*/
+}
+
 #endif
 InsnList* generate_code (ASTNode* tree)
 {
+	if (tree == NULL)
+	{
+		return InsnList_new();
+	}
+	
     InsnList* iloc = InsnList_new();
 
 
@@ -157,6 +191,9 @@ InsnList* generate_code (ASTNode* tree)
     v->postvisit_program     = CodeGenVisitor_gen_program;
     v->previsit_funcdecl     = CodeGenVisitor_previsit_funcdecl;
     v->postvisit_funcdecl    = CodeGenVisitor_gen_funcdecl;
+	v->postvisit_literal	 = CodeGenVisitor_gen_literal;
+	v->postvisit_return		 = CodeGenVisitor_gen_return;
+	v->postvisit_block		 = CodeGenVisitor_gen_block;
 
     /* generate code into AST attributes */
     NodeVisitor_traverse_and_free(v, tree);

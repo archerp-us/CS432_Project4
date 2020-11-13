@@ -1,0 +1,22 @@
+ERROR: Node is missing a temporary registermain:
+l0:
+  return
+
+==========================
+sp=65536 bp=-9999999 ret=-9999999
+virtual regs: 
+stack:
+other memory:
+==========================
+
+Executing: l0:
+
+==========================
+sp=65536 bp=-9999999 ret=-9999999
+virtual regs: 
+stack:
+other memory:
+==========================
+
+Executing: return
+RETURN VALUE = -9999999
