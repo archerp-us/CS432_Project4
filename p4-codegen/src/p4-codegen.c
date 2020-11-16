@@ -151,27 +151,24 @@ void CodeGenVisitor_gen_literal (NodeVisitor* visitor, ASTNode* node)
 {
 	Operand reg = virtual_register();
 
-	//if (node->literal.type == INT)
-	//{
-		EMIT2OP(LOAD_I, int_const(node->literal.integer), reg);
-		ASTNode_set_temp_reg(node, reg);
-	//}
+	EMIT2OP(LOAD_I, int_const(node->literal.integer), reg);
+	ASTNode_set_temp_reg(node, reg);
 }
 
 // function to generate code for return
 void CodeGenVisitor_gen_return (NodeVisitor* visitor, ASTNode* node)
 {
 	ASTNode_copy_code(node, node->funcreturn.value);
-	EMIT2OP(I2I, ASTNode_get_temp_reg(node), return_register());
+	EMIT2OP(I2I, ASTNode_get_temp_reg(node->funcreturn.value), return_register());
 }
 
 // function to generate code for literals
 void CodeGenVisitor_gen_block (NodeVisitor* visitor, ASTNode* node)
 {
-	/*FOR_EACH(ASTNode*, statement, node->block.statements)
+	FOR_EACH(ASTNode*, statement, node->block.statements)
 	{
 		ASTNode_copy_code(node, statement);
-	}*/
+	}
 }
 
 #endif
