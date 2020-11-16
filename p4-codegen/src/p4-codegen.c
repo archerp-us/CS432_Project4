@@ -171,6 +171,12 @@ void CodeGenVisitor_gen_block (NodeVisitor* visitor, ASTNode* node)
 	}
 }
 
+// function to generate code for binary operator
+void CodeGenVisitor_gen_binaryop (NodeVisitor* visitor, ASTNode* node)
+{
+	
+}
+
 #endif
 InsnList* generate_code (ASTNode* tree)
 {
