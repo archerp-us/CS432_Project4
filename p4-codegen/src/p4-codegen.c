@@ -174,7 +174,21 @@ void CodeGenVisitor_gen_block (NodeVisitor* visitor, ASTNode* node)
 // function to generate code for binary operator
 void CodeGenVisitor_gen_binaryop (NodeVisitor* visitor, ASTNode* node)
 {
+	ASTNode* left_node;
+	ASTNode* right_node;
+	ASTNode_copy_code(left_node, node->binaryop.left);
+	ASTNode_copy_code(right_node, node->binaryop.right);
 	
+	Operand reg = virtual_register();
+	Operand left_reg = virtual_register();
+	Operand right_reg = virtual_register();
+	ASTNode_set_temp_reg(left_node, left_reg);
+	ASTNode_set_temp_reg(right_node, right_reg);
+	
+	//check for addition
+	//EMIT3OP(ADD, ASTNode_get_temp_reg(left_node), ASTNode_get_temp_reg(right_node), reg);
+	EMIT3OP(ADD, left_reg, right_reg, reg);
+	ASTNode_set_temp_reg(node, reg);
 }
 
 #endif
@@ -197,6 +211,7 @@ InsnList* generate_code (ASTNode* tree)
 	v->postvisit_literal	 = CodeGenVisitor_gen_literal;
 	v->postvisit_return		 = CodeGenVisitor_gen_return;
 	v->postvisit_block		 = CodeGenVisitor_gen_block;
+	v->postvisit_binaryop    = CodeGenVisitor_gen_binaryop;
 
     /* generate code into AST attributes */
     NodeVisitor_traverse_and_free(v, tree);

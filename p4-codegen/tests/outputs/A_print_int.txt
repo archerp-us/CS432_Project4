@@ -1,4 +1,6 @@
-ERROR: Node is missing a temporary registermain:
+main:
+  loadI 0 => r1
+  i2i r1 => RET
 l0:
   return
 
@@ -9,14 +11,32 @@ stack:
 other memory:
 ==========================
 
-Executing: l0:
+Executing: loadI 0 => r1
 
 ==========================
 sp=65536 bp=-9999999 ret=-9999999
-virtual regs: 
+virtual regs:  r1=0
+stack:
+other memory:
+==========================
+
+Executing: i2i r1 => RET
+
+==========================
+sp=65536 bp=-9999999 ret=0
+virtual regs:  r1=0
+stack:
+other memory:
+==========================
+
+Executing: l0:
+
+==========================
+sp=65536 bp=-9999999 ret=0
+virtual regs:  r1=0
 stack:
 other memory:
 ==========================
 
 Executing: return
-RETURN VALUE = -9999999
+RETURN VALUE = 0
