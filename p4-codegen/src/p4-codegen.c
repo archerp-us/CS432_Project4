@@ -171,23 +171,107 @@ void CodeGenVisitor_gen_block (NodeVisitor* visitor, ASTNode* node)
 	}
 }
 
-// function to generate code for binary operator
+// function to generate code for binary operators
 void CodeGenVisitor_gen_binaryop (NodeVisitor* visitor, ASTNode* node)
 {
     ASTNode_copy_code(node, node->binaryop.left);
     ASTNode_copy_code(node, node->binaryop.right);
-
-    Operand reg = virtual_register();
+	
+	Operand reg = virtual_register();
     Operand left_reg = ASTNode_get_temp_reg(node->binaryop.left);
-    Operand right_reg = ASTNode_get_temp_reg(node->binaryop.right);
+	Operand right_reg = ASTNode_get_temp_reg(node->binaryop.right);
+	
+	//special case for ADD_I and MULT_I
+	if (node->binaryop.right->type == LITERAL)
+	{
+		if (node->binaryop.operator == ADDOP)
+		{
+			EMIT3OP(ADD_I, left_reg, int_const(node->binaryop.right->literal.integer), reg);
+		}
+		else if (node->binaryop.operator == MULOP)
+		{
+			EMIT3OP(MULT_I, left_reg, int_const(node->binaryop.right->literal.integer), reg);
+		}
+	}
+	//regular ADD and MULT
+	else {
+		if (node->binaryop.operator == ADDOP)
+		{
+			EMIT3OP(ADD, left_reg, right_reg, reg);
+		}
+		else if (node->binaryop.operator == MULOP)
+		{
+			EMIT3OP(MULT, left_reg, right_reg, reg);
+		}
+	}
 
-    //check for addition
-    if (node->binaryop.operator == ADDOP)
-    {
-        EMIT3OP(ADD, left_reg, right_reg, reg);
-    }
-    
+	//check for binary operator
+	//integers
+	if (node->binaryop.operator == SUBOP)
+	{
+		EMIT3OP(SUB, left_reg, right_reg, reg);
+	}
+	else if (node->binaryop.operator == DIVOP)
+	{
+		EMIT3OP(DIV, left_reg, right_reg, reg);
+	}
+	//booleans
+	else if (node->binaryop.operator == ANDOP)
+	{
+		EMIT3OP(AND, left_reg, right_reg, reg);
+	}
+	else if (node->binaryop.operator == OROP)
+	{
+		EMIT3OP(OR, left_reg, right_reg, reg);
+	}
+	//comparisons
+	else if (node->binaryop.operator == LTOP)
+	{
+		EMIT3OP(CMP_LT, left_reg, right_reg, reg);
+	}
+	else if (node->binaryop.operator == LEOP)
+	{
+		EMIT3OP(CMP_LE, left_reg, right_reg, reg);
+	}
+	else if (node->binaryop.operator == EQOP)
+	{
+		EMIT3OP(CMP_EQ, left_reg, right_reg, reg);
+	}
+	else if (node->binaryop.operator == GEOP)
+	{
+		EMIT3OP(CMP_GE, left_reg, right_reg, reg);
+	}
+	else if (node->binaryop.operator == GTOP)
+	{
+		EMIT3OP(CMP_GT, left_reg, right_reg, reg);
+	}
+	else if (node->binaryop.operator == NEQOP)
+	{
+		EMIT3OP(CMP_NE, left_reg, right_reg, reg);
+	}
+
     ASTNode_set_temp_reg(node, reg);
+}
+
+// function to generate code for unary operators
+void CodeGenVisitor_gen_unaryop (NodeVisitor* visitor, ASTNode* node)
+{
+	ASTNode_copy_code(node, node->unaryop.child);
+	
+	Operand reg = virtual_register();
+    Operand child_reg = ASTNode_get_temp_reg(node->unaryop.child);
+	
+	//check for unary commands, NOT and NEG
+	if (node->unaryop.operator == NEGOP)
+	{
+		EMIT2OP(NEG, child_reg, reg);
+	}
+	else if (node->unaryop.operator == NOTOP)
+	{
+		EMIT2OP(NOT, child_reg, reg);
+	}
+	
+	ASTNode_set_temp_reg(node, reg);
 }
 
 #endif
@@ -211,6 +295,7 @@ InsnList* generate_code (ASTNode* tree)
 	v->postvisit_return		 = CodeGenVisitor_gen_return;
 	v->postvisit_block		 = CodeGenVisitor_gen_block;
 	v->postvisit_binaryop    = CodeGenVisitor_gen_binaryop;
+	v->postvisit_unaryop     = CodeGenVisitor_gen_unaryop;
 
     /* generate code into AST attributes */
     NodeVisitor_traverse_and_free(v, tree);
