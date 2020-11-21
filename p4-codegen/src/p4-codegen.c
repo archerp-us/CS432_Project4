@@ -162,7 +162,7 @@ void CodeGenVisitor_gen_return (NodeVisitor* visitor, ASTNode* node)
 	EMIT2OP(I2I, ASTNode_get_temp_reg(node->funcreturn.value), return_register());
 }
 
-// function to generate code for literals
+// function to generate code for blocks
 void CodeGenVisitor_gen_block (NodeVisitor* visitor, ASTNode* node)
 {
 	FOR_EACH(ASTNode*, statement, node->block.statements)
@@ -274,6 +274,18 @@ void CodeGenVisitor_gen_unaryop (NodeVisitor* visitor, ASTNode* node)
 	ASTNode_set_temp_reg(node, reg);
 }
 
+// function to generate code for assignments
+void CodeGenVisitor_gen_assignment (NodeVisitor* visitor, ASTNode* node)
+{
+	ASTNode_copy_code(node, node->assignment.location);
+	ASTNode_copy_code(node, node->assignment.value);
+	
+    Operand location_reg = ASTNode_get_temp_reg(node->assignment.location);
+	Operand value_reg = ASTNode_get_temp_reg(node->assignment.value);
+	
+	EMIT2OP(STORE, value_reg, location_reg);
+}
+
 #endif
 InsnList* generate_code (ASTNode* tree)
 {
@@ -296,6 +308,8 @@ InsnList* generate_code (ASTNode* tree)
 	v->postvisit_block		 = CodeGenVisitor_gen_block;
 	v->postvisit_binaryop    = CodeGenVisitor_gen_binaryop;
 	v->postvisit_unaryop     = CodeGenVisitor_gen_unaryop;
+	//v->postvisit_assignment  = CodeGenVisitor_gen_assignment;
+	//v->postvisit_location    = CodeGenVisitor_gen_location;
 
     /* generate code into AST attributes */
     NodeVisitor_traverse_and_free(v, tree);
